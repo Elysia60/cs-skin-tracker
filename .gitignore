@@ -1,0 +1,4 @@
+data/
+*.log
+*.corrupt-*
+.DS_Store
