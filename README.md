@@ -41,7 +41,7 @@ node index.js plan    # ¥500 资金分配方案
 | 命令 | 说明 |
 |---|---|
 | `check [皮肤名]` | 三平台实时价格 + 价差计算 |
-| `monitor [秒]` | 持续监控,价格告警实时触发 |
+| `monitor [秒]` | 持续监控,价格告警 + **涨跌幅≥15% 自动触发 GLM 异动分析** |
 | `analyze <皮肤名>` | 均线/波动率/支撑阻力/综合评分 |
 | `ai <皮肤名>` | GLM AI 深度分析报告 |
 | `plan` / `risk` | 资金分配方案 / 组合风险评估 |
@@ -73,6 +73,10 @@ node index.js ai "AK-47 | Redline (Field-Tested)"
 ```bash
 npm test    # 14 个用例:重定向策略/输入清洗/AI 层降级
 ```
+
+## 这个项目怎么和 AI 协作做出来的
+
+95% 代码由 AI 编写,但每个决定与验收是人做的——包括一次用代理日志识破"假成功"、一次用请求转储+二分法定位无名工具导致的 400。完整协作日志(含面试讲法):[docs/ai-collaboration-log.md](docs/ai-collaboration-log.md)
 
 ## 项目结构
 

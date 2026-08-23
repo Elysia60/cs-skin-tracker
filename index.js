@@ -365,6 +365,27 @@ function cmdDemo() {
   console.log("  接下来试试: analyze | plan | risk | stats\n" + C.X);
 }
 
+const AI_ALERT_THRESHOLD = 15; // 单次涨跌幅 ≥15% 自动触发 AI 分析
+
+async function maybeAIAlert(skinName, currentPrice, lastPrice) {
+  if (!lastPrice || !currentPrice) return;
+  const pct = Math.abs(currentPrice - lastPrice) / lastPrice * 100;
+  if (pct < AI_ALERT_THRESHOLD) return;
+  console.log(C.R + C.BOLD + "\n  🚨 异动检测: " + skinName + " " + (currentPrice > lastPrice ? "↑" : "↓") + pct.toFixed(1) + "% → 触发 AI 分析" + C.X);
+  const history = db.getPriceHistory(skinName);
+  const prices = history.map(function(h) { return h.buff; }).filter(Boolean);
+  const mean = prices.reduce(function(s, v) { return s + v; }, 0) / prices.length;
+  const vol = analyzer.volatility(prices);
+  const stats = {
+    current: currentPrice, mean: mean, count: prices.length,
+    volatilityPct: currentPrice > 0 ? (vol / currentPrice * 100).toFixed(1) : null,
+    trend: analyzer.trend(prices), maxDrawdownPct: (analyzer.maxDrawdown(prices) * 100).toFixed(1),
+  };
+  const report = await ai.analyze(skinName, stats);
+  report.split("\n").forEach(function(line) { console.log("  " + line); });
+  console.log("");
+}
+
 async function cmdMonitor(interval) {
   const sec = parseInt(interval) || 300;
   const list = loadWatchlist();
@@ -383,6 +404,7 @@ async function cmdMonitor(interval) {
           const change = last && last.buff ? fmtChange(last.buff, result.buff.minPrice) : "";
           console.log("  " + pad(name, 40) + "Buff: " + fmtPrice(result.buff.minPrice) + "  " + change);
           db.savePrice(name, result.steam ? result.steam.lowest : null, result.buff.minPrice, result.youpin ? result.youpin.minPrice : null);
+          if (last && last.buff) await maybeAIAlert(name, result.buff.minPrice, last.buff);
         } else {
           console.log(C.R + "  \u2717 " + name + ": 获取失败" + C.X);
         }
