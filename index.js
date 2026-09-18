@@ -321,6 +321,20 @@ function cmdRisk() {
   console.log("");
 }
 
+function cmdMomentum() {
+  const list = loadWatchlist();
+  if (list.length === 0) { console.log(C.Y + "监控列表为空" + C.X + " 先 add 皮肤或用 demo 生成数据"); return; }
+  console.log(C.BOLD + "\n📈 动量信号 (连涨3天=买入 / 连跌=回避)\n" + C.X);
+  divider();
+  for (const name of list) {
+    const m = analyzer.momentumSignal(name);
+    const color = m.signal.includes("买入") ? C.G : m.signal.includes("回避") ? C.R : C.Y;
+    console.log("  " + pad(name, 38) + color + m.signal + C.X + (m.up + m.down > 0 ? "  (涨" + m.up + "天/跌" + m.down + "天)" : ""));
+  }
+  console.log(C.Y + "\n  ⚠ 基于已验证的动量规律: 饰品市场连涨追、连跌避。数据参考，不构成投资建议。" + C.X);
+  console.log("");
+}
+
 function cmdDemo() {
   const skins = [
     { name: "AK-47 | Redline (Field-Tested)", price: 85 },
@@ -472,6 +486,7 @@ function cmdHelp() {
     ["analyze <皮肤名>", "深度分析 (均线/波动/支撑/评分)"],
     ["ai <皮肤名>", "GLM AI 深度分析 (无key时为离线演示)"],
     ["plan", "500元资金分配方案"],
+    ["momentum", "动量信号 (连涨3天=买入/连跌=回避)"],
     ["risk", "风险评估 (波动率/回撤/仓位)"],
     ["demo", "生成模拟数据体验功能"],
   ];
@@ -508,6 +523,7 @@ function cmdHelp() {
       case "analyze": cmdAnalyze(args[1]); break;
       case "ai": await cmdAI(args[1]); break;
       case "plan": cmdPlan(); break;
+      case "momentum": cmdMomentum(); break;
       case "risk": cmdRisk(); break;
       case "demo": cmdDemo(); break;
       default: cmdHelp(); break;

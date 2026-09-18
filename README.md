@@ -45,6 +45,7 @@ node index.js plan    # ¥500 资金分配方案
 | `analyze <皮肤名>` | 均线/波动率/支撑阻力/综合评分 |
 | `ai <皮肤名>` | GLM AI 深度分析报告 |
 | `plan` / `risk` | 资金分配方案 / 组合风险评估 |
+| `momentum` | 动量信号 (连涨3天=买入 / 连跌=回避) |
 | `buy` `sell` `positions` `stats` | 持仓与盈亏管理 |
 | `add` `remove` `alert` | 监控列表与价格告警 |
 
